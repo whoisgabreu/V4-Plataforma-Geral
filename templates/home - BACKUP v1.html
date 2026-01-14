@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Projetos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style/home.css">
+
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <img class="logo" src="/static/images/V4LOGO.png" alt="Logo">
+            <div class="header-title">
+                <h1>Hub de Projetos</h1>
+                <span class="header-subtitle">Lisboa&CO TechOps</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name">{{ session.nome }}</div>
+                <div class="user-role">{{ session.funcao }} - {{ session.squad }}</div>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='/logout'">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-container">
+        <div class="welcome-section">
+            <h2>Bem-vindo, {{ session.nome.split()[0] }}! 👋</h2>
+            <p>Gerencie seus projetos de forma centralizada</p>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Buscar projetos..." onkeyup="filterProjects()">
+            </div>
+        </div>
+
+        <!-- GRID DE PROJETOS -->
+        <div class="projects-grid" id="projectsGrid">
+            {% if projetos %}
+                {% for projeto in projetos %}
+                <div class="project-card" data-projeto="{{ projeto.projetos.nome|lower }}">
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <span class="project-status status-{{ projeto.projetos.status|lower }}">
+                            {{ projeto.projetos.status }}
+                        </span>
+                    </div>
+                    <h3 class="project-title">{{ projeto.projetos.nome }}</h3>
+                    <p class="project-description">
+                        {{ projeto.projetos.descricao if projeto.projetos.descricao else 'Sem descrição disponível' }}
+                    </p>
+                    <div class="project-meta">
+                        <span>
+                            <i class="fa-solid fa-calendar"></i>
+                            {{ projeto.projetos.data_de_inicio | format_date }}
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-users"></i>
+                            {{ projeto.projetos.squad_atribuida if projeto.projetos.squad_atribuida else 'TechOps' }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <h3>Nenhum projeto encontrado</h3>
+                    <p>Você ainda não está associado a nenhum projeto</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 TechOps — Time de Tecnologia da Lisboa&CO. Transformando ideias em inovação.</p>
+    </footer>
+
+    <script>
+        function filterProjects() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                const projectName = card.getAttribute('data-projeto');
+                if (projectName.includes(searchValue)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
