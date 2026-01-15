@@ -20,7 +20,7 @@
         <div class="user-info">
             <div class="user-details">
                 <div class="user-name">{{ session.nome }}</div>
-                <div class="user-role">{{ session.funcao }} - {{ session.squad }}</div>
+                <div class="user-role">{{ session.funcao }} - {{ session.squad }} - {{ session.nivel_acesso }}</div>
             </div>
             <button class="logout-btn" onclick="window.location.href='/logout'">
                 <i class="fa-solid fa-right-from-bracket"></i> Sair
@@ -227,6 +227,19 @@
                             <input type="text" name="nome" id="modal_nome" required disabled>
                         </div>
                         
+                        <!-- TESTE STEP -->
+                        <div class="form-group">
+                            <label>Step</label>
+                            <select name="step" id="modal_step" disabled>
+                                <option value="">Selecione...</option>
+                                <option value="Saber">Saber</option>
+                                <option value="Ter">Ter</option>
+                                <option value="Executar">Executar</option>
+                                <option value="Potencializar">Potencializar</option>
+                            </select>
+                        </div>
+                        <!-- TESTE STEP -->
+
                         <div class="form-group">
                             <label>Pipefy ID</label>
                             <input type="text" name="pipefy_id" id="modal_pipefy_id" disabled>
@@ -293,7 +306,7 @@
                             <input type="text" name="google_account_id" id="modal_google_account" disabled>
                         </div>
                         
-                        <div class="form-group">
+                        <div class="form-group full-width">
                             <label>Fase do Pipefy</label>
                             <input type="text" name="fase_do_pipefy" id="modal_fase_pipefy" disabled>
                         </div>
@@ -302,6 +315,11 @@
                             <label>URL Webhook GChat</label>
                             <input type="url" name="url_webhook_gchat" id="modal_webhook_url" disabled>
                         </div>
+                        <!-- TESTE DETALHES -->
+                        <div class="form-group full-width">
+                            <label>Informações Gerais do Projeto</label>
+                            <textarea name="informacoes_gerais" id="modal_informacoes" rows="6" disabled></textarea>
+                        </div>
                     </div>
                 </div>
                 
@@ -309,13 +327,17 @@
                     <button type="button" class="btn-secondary" onclick="backToClientModal()">Voltar</button>
 
                     <!-- ✅ Agora o mesmo botão vira Editar/Cancelar -->
-                    <button type="button" class="btn-edit" id="editBtn" onclick="toggleEditMode()">
-                        <i class="fa-solid fa-pen-to-square"></i> Editar
-                    </button>
+                    
+                    {% if session.nivel_acesso != "Leitor" %}
+                        <button type="button" class="btn-edit" id="editBtn" onclick="toggleEditMode()">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
 
-                    <button type="submit" class="btn-primary" id="saveBtn" style="display: none;">
-                        <i class="fa-solid fa-floppy-disk"></i> Salvar
-                    </button>
+                        <button type="submit" class="btn-primary" id="saveBtn" style="display: none;">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar
+                        </button>
+                    {% endif %}
+
                 </div>
                 
                 <input type="hidden" name="projeto_id" id="modal_projeto_id">
@@ -327,8 +349,9 @@
     <footer>
         <p>© 2025 TechOps — Time de Tecnologia da Lisboa&CO. Transformando ideias em inovação.</p>
     </footer>
-
+    
     <script>
+        
         let currentSlide = 'ativos';
         let currentClientData = null;
         let currentProjectData = null;
@@ -412,6 +435,8 @@
             document.getElementById('modal_moeda').value = projectData.moeda || 'BRL';
             document.getElementById('modal_squad').value = projectData.squad_atribuida || '';
             document.getElementById('modal_produto').value = projectData.produto_contratado || '';
+            document.getElementById('modal_step').value = projectData.step || '';
+            document.getElementById('modal_informacoes').value = projectData.informacoes_gerais || '';
             document.getElementById('modal_cohort').value = projectData.cohort || '';
             document.getElementById('modal_meta_account').value = projectData.meta_account_id || '';
             document.getElementById('modal_google_account').value = projectData.google_account_id || '';
@@ -451,23 +476,46 @@
             setEditMode(isEditMode);
         }
 
+        // function setEditMode(enable) {
+        //     const inputs = document.querySelectorAll('#projectForm input, #projectForm select, #projectForm textarea');
+        //     inputs.forEach(input => {
+        //         if (input.id !== 'modal_projeto_id' && input.id !== 'modal_tipo_projeto') {
+        //             input.disabled = !enable;
+        //         }
+        //     });
+
+        //     // ✅ botão Editar vira Cancelar, e Salvar aparece
+        //     const editBtn = document.getElementById('editBtn');
+        //     const saveBtn = document.getElementById('saveBtn');
+
+        //     saveBtn.style.display = enable ? 'inline-flex' : 'none';
+        //     editBtn.innerHTML = enable
+        //         ? '<i class="fa-solid fa-xmark"></i> Cancelar'
+        //         : '<i class="fa-solid fa-pen-to-square"></i> Editar';
+        // }
+
         function setEditMode(enable) {
-            const inputs = document.querySelectorAll('#projectForm input, #projectForm select');
+            const inputs = document.querySelectorAll('#projectForm input, #projectForm select, #projectForm textarea');
             inputs.forEach(input => {
                 if (input.id !== 'modal_projeto_id' && input.id !== 'modal_tipo_projeto') {
                     input.disabled = !enable;
                 }
             });
 
-            // ✅ botão Editar vira Cancelar, e Salvar aparece
             const editBtn = document.getElementById('editBtn');
             const saveBtn = document.getElementById('saveBtn');
+
+            // 🔒 trava se for Leitor
+            if (!editBtn || !saveBtn) {
+                return;
+            }
 
             saveBtn.style.display = enable ? 'inline-flex' : 'none';
             editBtn.innerHTML = enable
                 ? '<i class="fa-solid fa-xmark"></i> Cancelar'
                 : '<i class="fa-solid fa-pen-to-square"></i> Editar';
         }
+
 
         async function updateProject(event) {
             event.preventDefault();
@@ -498,16 +546,16 @@
             }
         }
 
-        window.onclick = function(event) {
-            const clientModal = document.getElementById('clientModal');
-            const projectModal = document.getElementById('projectModal');
+        // window.onclick = function(event) {
+        //     const clientModal = document.getElementById('clientModal');
+        //     const projectModal = document.getElementById('projectModal');
 
-            if (event.target === clientModal) {
-                closeClientModal();
-            } else if (event.target === projectModal) {
-                closeProjectModal();
-            }
-        }
+        //     if (event.target === clientModal) {
+        //         closeClientModal();
+        //     } else if (event.target === projectModal) {
+        //         closeProjectModal();
+        //     }
+        // }
     </script>
 </body>
 </html>

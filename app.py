@@ -25,6 +25,7 @@ def login():
             db_senioridade = response.json()[0].get("user").get("senioridade")
             db_squad = response.json()[0].get("user").get("squad")
             db_senha = response.json()[0].get("user").get("senha")
+            db_acesso = response.json()[0].get("user").get("nivel_acesso")
 
             if senha == db_senha:
                 session["nome"] = db_nome
@@ -32,6 +33,7 @@ def login():
                 session["funcao"] = db_funcao
                 session["senioridade"] = db_senioridade
                 session["squad"] = db_squad
+                session["nivel_acesso"] = db_acesso
                 return redirect(url_for("home"))
 
     return render_template("login.html")
