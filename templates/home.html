@@ -305,6 +305,16 @@
                             <label>Google Account ID</label>
                             <input type="text" name="google_account_id" id="modal_google_account" disabled>
                         </div>
+
+                        <div class="form-group">
+                            <label>Orçamento de Mídia - Meta</label>
+                            <input type="text" name="orcamento_midia_meta" id="modal_orcamento_midia_meta" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Orçamento de Mídia - Google</label>
+                            <input type="text" name="orcamento_midia_google" id="modal_orcamento_midia_google" disabled>
+                        </div>
                         
                         <div class="form-group full-width">
                             <label>Fase do Pipefy</label>
@@ -424,7 +434,7 @@
             currentProjectData = projectData;
             isEditMode = false;
             setEditMode(false);
-
+            modal_orcamento_midia_meta
             document.getElementById('projectModalTitle').textContent = projectData.nome || 'Detalhes do Projeto';
             document.getElementById('modal_projeto_id').value = projectData.id || '';
             document.getElementById('modal_tipo_projeto').value = tipoProjeto || '';
@@ -440,6 +450,8 @@
             document.getElementById('modal_cohort').value = projectData.cohort || '';
             document.getElementById('modal_meta_account').value = projectData.meta_account_id || '';
             document.getElementById('modal_google_account').value = projectData.google_account_id || '';
+            document.getElementById('modal_orcamento_midia_meta').value = projectData.orcamento_midia_meta || '';
+            document.getElementById('modal_orcamento_midia_google').value = projectData.orcamento_midia_google || '';
             document.getElementById('modal_fase_pipefy').value = projectData.fase_do_pipefy || '';
             document.getElementById('modal_webhook_url').value = projectData.url_webhook_gchat || '';
 
