@@ -26,15 +26,21 @@ def login():
             db_squad = response.json()[0].get("user").get("squad")
             db_senha = response.json()[0].get("user").get("senha")
             db_acesso = response.json()[0].get("user").get("nivel_acesso")
+            db_ativo = response.json()[0].get("user").get("ativo")
 
-            if senha == db_senha:
-                session["nome"] = db_nome
-                session["email"] = db_email
-                session["funcao"] = db_funcao
-                session["senioridade"] = db_senioridade
-                session["squad"] = db_squad
-                session["nivel_acesso"] = db_acesso
-                return redirect(url_for("home"))
+            if db_ativo is not True:
+                return render_template("login.html", error = "Login inativo. Fale com a Gerência.")
+
+            if senha != db_senha:
+                return render_template("login.html", error = "E-mail e/ou Senha incorreto(s).")
+
+            session["nome"] = db_nome
+            session["email"] = db_email
+            session["funcao"] = db_funcao
+            session["senioridade"] = db_senioridade
+            session["squad"] = db_squad
+            session["nivel_acesso"] = db_acesso
+            return redirect(url_for("home"))
 
     return render_template("login.html")
 
@@ -106,7 +112,6 @@ def home():
                          clientes_inativos = inativos,
                          squads = squads)
 
-
 @app.template_filter('format_date')
 def format_date(date_str):
     if not date_str:
@@ -115,6 +120,35 @@ def format_date(date_str):
     year, month, day = date_part.split('-')
     return f'{day}/{month}/{year}'
 
+@app.route("/manage_users", methods=["GET"])
+def manage_users():
+    if "nome" not in session:
+        return redirect(url_for("login"))
+    
+    # Verificar se é gerência
+    if session.get("squad") != "Gerência":
+        return redirect(url_for("home"))
+    
+    # Buscar usuários
+    try:
+        response = req.get(
+            "https://n8n.v4lisboatech.com.br/webhook/list_users",
+            headers={"x-api-key": "4815162342"},
+            timeout=10
+        )
+        
+        if response.status_code == 200 and response.text.strip():
+            usuarios = response.json()
+            # Garantir que é uma lista
+            if not isinstance(usuarios, list):
+                usuarios = []
+        else:
+            usuarios = []
+    except Exception as e:
+        print(f"Erro ao buscar usuários: {e}")
+        usuarios = []
+    
+    return render_template("manage_users.html", usuarios=usuarios)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

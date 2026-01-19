@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Projetos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style/home.css">
+
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <img class="logo" src="/static/images/V4LOGO.png" alt="Logo">
+            <div class="header-title">
+                <h1>Hub de Projetos</h1>
+                <span class="header-subtitle">Lisboa&CO TechOps</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name">{{ session.nome }}</div>
+                <div class="user-role">{{ session.funcao }} - {{ session.squad }}</div>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='/logout'">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-container">
+        <div class="welcome-section">
+            <h2>Bem-vindo, {{ session.nome.split()[0] }}! 👋</h2>
+            <p>Gerencie seus projetos de forma centralizada</p>
+        </div>
+
+        <!-- TABS DE NAVEGAÇÃO -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('ativos')">
+                <i class="fa-solid fa-rocket"></i>
+                Projetos Ativos
+                <span class="tab-count">{{ projetos|length }}</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('onetime')">
+                <i class="fa-solid fa-bolt"></i>
+                One-Time
+                <span class="tab-count">{{ projetos_onetime|length }}</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('inativos')">
+                <i class="fa-solid fa-archive"></i>
+                Inativos
+                <span class="tab-count">{{ projetos_inativos|length }}</span>
+            </button>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Buscar projetos..." onkeyup="filterProjects()">
+            </div>
+        </div>
+
+        <!-- CONTAINER DE SLIDES -->
+        <div class="slides-wrapper">
+            <!-- SLIDE ATIVOS -->
+            <div class="slide-content active" id="slide-ativos">
+                <div class="projects-grid">
+                    {% if projetos %}
+                        {% for projeto in projetos %}
+                        <div class="project-card" data-projeto="{{ projeto.projetos.nome|lower }}">
+                            <div class="project-header">
+                                <div class="project-icon">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                </div>
+                                <span class="project-status status-ativo">Ativo</span>
+                            </div>
+                            <h3 class="project-title">{{ projeto.projetos.nome }}</h3>
+                            <p class="project-description">
+                                Squad: {{ projeto.projetos.squad_atribuida if projeto.projetos.squad_atribuida else 'N/A' }}
+                            </p>
+                            <div class="project-meta">
+                                <span>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    {{ projeto.projetos.data_de_inicio | format_date }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-dollar-sign"></i>
+                                    {{ projeto.projetos.fee }} {{ projeto.projetos.moeda }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>Nenhum projeto ativo</h3>
+                            <p>Você ainda não está associado a nenhum projeto ativo</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SLIDE ONETIME -->
+            <div class="slide-content" id="slide-onetime">
+                <div class="projects-grid">
+                    {% if projetos_onetime %}
+                        {% for projeto in projetos_onetime %}
+                        <div class="project-card" data-projeto="{{ projeto.projetos.nome|lower }}">
+                            <div class="project-header">
+                                <div class="project-icon">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <span class="project-status status-onetime">One-Time</span>
+                            </div>
+                            <h3 class="project-title">{{ projeto.projetos.nome }}</h3>
+                            <p class="project-description">
+                                Squad: {{ projeto.projetos.squad_atribuida if projeto.projetos.squad_atribuida else 'N/A' }}
+                            </p>
+                            <div class="project-meta">
+                                <span>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    {{ projeto.projetos.data_de_inicio | format_date }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-dollar-sign"></i>
+                                    {{ projeto.projetos.fee }} {{ projeto.projetos.moeda }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>Nenhum projeto one-time</h3>
+                            <p>Você ainda não está associado a nenhum projeto one-time</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SLIDE INATIVOS -->
+            <div class="slide-content" id="slide-inativos">
+                <div class="projects-grid">
+                    {% if projetos_inativos %}
+                        {% for projeto in projetos_inativos %}
+                        <div class="project-card" data-projeto="{{ projeto.projetos.nome|lower }}">
+                            <div class="project-header">
+                                <div class="project-icon inactive">
+                                    <i class="fa-solid fa-folder"></i>
+                                </div>
+                                <span class="project-status status-inativo">Inativo</span>
+                            </div>
+                            <h3 class="project-title">{{ projeto.projetos.nome }}</h3>
+                            <p class="project-description">
+                                Squad: {{ projeto.projetos.squad_atribuida if projeto.projetos.squad_atribuida else 'N/A' }}
+                            </p>
+                            <div class="project-meta">
+                                <span>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    {{ projeto.projetos.data_de_inicio | format_date }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-dollar-sign"></i>
+                                    {{ projeto.projetos.fee }} {{ projeto.projetos.moeda }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>Nenhum projeto inativo</h3>
+                            <p>Você ainda não está associado a nenhum projeto inativo</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 TechOps — Time de Tecnologia da Lisboa&CO. Transformando ideias em inovação.</p>
+    </footer>
+
+    <script>
+
+        let currentSlide = 'ativos';
+
+        function switchTab(tab) {
+            // Atualiza botões
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+            
+            // Atualiza slides
+            document.querySelectorAll('.slide-content').forEach(slide => slide.classList.remove('active'));
+            document.getElementById(`slide-${tab}`).classList.add('active');
+            
+            currentSlide = tab;
+        }
+
+
+        function filterProjects() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                const projectName = card.getAttribute('data-projeto');
+                if (projectName.includes(searchValue)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

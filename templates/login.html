@@ -9,6 +9,8 @@
 
 </head>
 <body>
+
+
   <div class="container">
     <!-- LADO ESQUERDO -->
     <div class="form-section">
@@ -27,6 +29,13 @@
           <input type="password" name="senha" id="senha" placeholder="Senha" required>
           <i class="fa-solid fa-eye toggle-eye" id="toggleSenha"></i>
         </div>
+
+        {% if error %}
+            <div class="error-message">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
 
         <button type="submit">ENTRAR</button>
       </form>

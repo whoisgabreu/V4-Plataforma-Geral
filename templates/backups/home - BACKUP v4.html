@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Projetos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style/home.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <img class="logo" src="/static/images/V4LOGO.png" alt="Logo">
+            <div class="header-title">
+                <h1>Hub de Projetos</h1>
+                <span class="header-subtitle">Lisboa&CO TechOps</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name">{{ session.nome }}</div>
+                <div class="user-role">{{ session.funcao }} - {{ session.squad }}</div>
+            </div>
+            <button class="logout-btn" onclick="window.location.href='/logout'">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-container">
+        <div class="welcome-section">
+            <h2>Bem-vindo, {{ session.nome.split()[0] }}! 👋</h2>
+            <p>Gerencie seus clientes e projetos de forma centralizada</p>
+        </div>
+
+        <!-- TABS DE NAVEGAÇÃO -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('ativos')">
+                <i class="fa-solid fa-rocket"></i>
+                Clientes Ativos
+                <span class="tab-count">{{ clientes_ativos|length }}</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('onetime')">
+                <i class="fa-solid fa-bolt"></i>
+                One-Time
+                <span class="tab-count">{{ clientes_onetime|length }}</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('inativos')">
+                <i class="fa-solid fa-archive"></i>
+                Inativos
+                <span class="tab-count">{{ clientes_inativos|length }}</span>
+            </button>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Buscar clientes..." onkeyup="filterClients()">
+            </div>
+        </div>
+
+        <!-- CONTAINER DE SLIDES -->
+        <div class="slides-wrapper">
+            <!-- SLIDE ATIVOS -->
+            <div class="slide-content active" id="slide-ativos">
+                <div class="projects-grid">
+                    {% if clientes_ativos %}
+                        {% for cliente_nome, projetos in clientes_ativos.items() %}
+                        <div class="project-card" 
+                            data-cliente="{{ cliente_nome|lower }}"
+                            data-projetos='{{ projetos|tojson|safe }}'
+                            data-tipo="ativo"
+                            onclick="openClientModal(this)">
+                            <div class="project-header">
+                                <div class="project-icon">
+                                    <i class="fa-solid fa-building"></i>
+                                </div>
+                                <span class="project-status status-ativo">{{ projetos|length }} projeto(s)</span>
+                            </div>
+                            <h3 class="project-title">{{ cliente_nome }}</h3>
+                            <p class="project-description">
+                                Squad: {{ projetos[0].squad_atribuida if projetos[0].squad_atribuida else 'N/A' }}
+                            </p>
+                            <div class="project-meta">
+                                <span>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    {{ projetos[0].data_de_inicio | format_date }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    {{ projetos|length }} projetos
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>Nenhum cliente ativo</h3>
+                            <p>Você ainda não está associado a nenhum cliente ativo</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SLIDE ONETIME -->
+            <div class="slide-content" id="slide-onetime">
+                <div class="projects-grid">
+                    {% if clientes_onetime %}
+                        {% for cliente_nome, projetos in clientes_onetime.items() %}
+                        <div class="project-card" 
+                            data-cliente="{{ cliente_nome|lower }}"
+                            data-projetos='{{ projetos|tojson|safe }}'
+                            data-tipo="onetime"
+                            onclick="openClientModal(this)">
+                            <div class="project-header">
+                                <div class="project-icon">
+                                    <i class="fa-solid fa-building"></i>
+                                </div>
+                                <span class="project-status status-onetime">{{ projetos|length }} projeto(s)</span>
+                            </div>
+                            <h3 class="project-title">{{ cliente_nome }}</h3>
+                            <p class="project-description">
+                                Squad: {{ projetos[0].squad_atribuida if projetos[0].squad_atribuida else 'N/A' }}
+                            </p>
+                            <div class="project-meta">
+                                <span>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    {{ projetos[0].data_de_inicio | format_date }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    {{ projetos|length }} projetos
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>Nenhum cliente one-time</h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- SLIDE INATIVOS -->
+            <div class="slide-content" id="slide-inativos">
+                <div class="projects-grid">
+                    {% if clientes_inativos %}
+                        {% for cliente_nome, projetos in clientes_inativos.items() %}
+                        <div class="project-card" 
+                            data-cliente="{{ cliente_nome|lower }}"
+                            data-projetos='{{ projetos|tojson|safe }}'
+                            data-tipo="inativo"
+                            onclick="openClientModal(this)">
+                            <div class="project-header">
+                                <div class="project-icon inactive">
+                                    <i class="fa-solid fa-building"></i>
+                                </div>
+                                <span class="project-status status-inativo">{{ projetos|length }} projeto(s)</span>
+                            </div>
+                            <h3 class="project-title">{{ cliente_nome }}</h3>
+                            <p class="project-description">
+                                Squad: {{ projetos[0].squad_atribuida if projetos[0].squad_atribuida else 'N/A' }}
+                            </p>
+                            <div class="project-meta">
+                                <span>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    {{ projetos[0].data_de_inicio | format_date }}
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    {{ projetos|length }} projetos
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>Nenhum cliente inativo</h3>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE LISTA DE PROJETOS DO CLIENTE -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="clientModalTitle">Projetos do Cliente</h2>
+                <button class="close-btn" onclick="closeClientModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="projects-list" id="projectsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DETALHES/EDIÇÃO DO PROJETO -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="back-btn" onclick="backToClientModal()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2 id="projectModalTitle">Detalhes do Projeto</h2>
+                <button class="close-btn" onclick="closeProjectModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="projectForm" onsubmit="updateProject(event)">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome do Projeto</label>
+                            <input type="text" name="nome" id="modal_nome" required disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Pipefy ID</label>
+                            <input type="text" name="pipefy_id" id="modal_pipefy_id" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Documento</label>
+                            <input type="text" name="documento" id="modal_documento" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Fee</label>
+                            <input type="number" name="fee" id="modal_fee" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Moeda</label>
+                            <select name="moeda" id="modal_moeda" disabled>
+                                <option value="BRL">BRL</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Squad Atribuída</label>
+                            <!-- <select name="squad_atribuida" id="modal_squad">
+                                {% for s in squad %}
+                                    <option value="{{ s }}">{{ s }}</option>
+                                {% endfor %}
+                            </select> -->
+                            <input type="text" name="squad_atribuida" id="modal_squad" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Produto Contratado</label>
+                            <input type="text" name="produto_contratado" id="modal_produto" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Data de Início</label>
+                            <input type="date" name="data_de_inicio" id="modal_data_inicio" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Cohort</label>
+                            <input type="text" name="cohort" id="modal_cohort" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Meta Account ID</label>
+                            <input type="text" name="meta_account_id" id="modal_meta_account" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Google Account ID</label>
+                            <input type="text" name="google_account_id" id="modal_google_account" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Fase do Pipefy</label>
+                            <input type="text" name="fase_do_pipefy" id="modal_fase_pipefy" disabled>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>URL Webhook GChat</label>
+                            <input type="url" name="url_webhook_gchat" id="modal_webhook_url" disabled>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="backToClientModal()">Voltar</button>
+                    <button type="button" class="btn-edit" id="editBtn" onclick="toggleEditMode()">
+                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                    </button>
+                    <button type="submit" class="btn-primary" id="saveBtn" style="display: none;">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar
+                    </button>
+                </div>
+                
+                <input type="hidden" name="projeto_id" id="modal_projeto_id">
+                <input type="hidden" name="tipo_projeto" id="modal_tipo_projeto">
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 TechOps — Time de Tecnologia da Lisboa&CO. Transformando ideias em inovação.</p>
+    </footer>
+
+    <script>
+        let currentSlide = 'ativos';
+        let currentClientData = null;
+        let currentProjectData = null;
+        let isEditMode = false;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+            
+            document.querySelectorAll('.slide-content').forEach(slide => slide.classList.remove('active'));
+            document.getElementById(`slide-${tab}`).classList.add('active');
+            
+            currentSlide = tab;
+        }
+
+        function filterClients() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const activeSlide = document.querySelector('.slide-content.active');
+            const cards = activeSlide.querySelectorAll('.project-card');
+            
+            cards.forEach(card => {
+                const clientName = card.getAttribute('data-cliente');
+                card.style.display = clientName.includes(searchValue) ? 'block' : 'none';
+            });
+        }
+
+        function openClientModal(cardElement) {
+            const projetos = JSON.parse(cardElement.getAttribute('data-projetos'));
+            const clienteNome = cardElement.querySelector('.project-title').textContent;
+            const tipo = cardElement.getAttribute('data-tipo');
+            
+            currentClientData = { nome: clienteNome, projetos, tipo };
+            
+            document.getElementById('clientModalTitle').textContent = `Projetos de ${clienteNome}`;
+            
+            const projectsList = document.getElementById('projectsList');
+            projectsList.innerHTML = '';
+            
+            projetos.forEach(projeto => {
+                const projectItem = document.createElement('div');
+                projectItem.className = 'project-list-item';
+                projectItem.innerHTML = `
+                    <div class="project-item-info">
+                        <h4>${projeto.produto_contratado || 'Sem nome'}</h4>
+                        <p>Squad: ${projeto.squad_atribuida || 'N/A'} | Fee: ${projeto.fee || 0} ${projeto.moeda || 'BRL'}</p>
+                    </div>
+                    <button class="btn-view" onclick='openProjectModal(${JSON.stringify(projeto)}, "${tipo}")'>
+                        <i class="fa-solid fa-eye"></i> Ver Detalhes
+                    </button>
+                `;
+                projectsList.appendChild(projectItem);
+            });
+            
+            document.getElementById('clientModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeClientModal() {
+            document.getElementById('clientModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentClientData = null;
+        }
+
+        function openProjectModal(projectData, tipoProjeto) {
+            currentProjectData = projectData;
+            isEditMode = false;
+            
+            document.getElementById('projectModalTitle').textContent = projectData.nome;
+            document.getElementById('modal_projeto_id').value = projectData.id;
+            document.getElementById('modal_tipo_projeto').value = tipoProjeto;
+            document.getElementById('modal_nome').value = projectData.nome || '';
+            document.getElementById('modal_pipefy_id').value = projectData.pipefy_id || '';
+            document.getElementById('modal_documento').value = projectData.documento || '';
+            document.getElementById('modal_fee').value = projectData.fee || '';
+            document.getElementById('modal_moeda').value = projectData.moeda || 'BRL';
+            document.getElementById('modal_squad').value = projectData.squad_atribuida || '';
+            document.getElementById('modal_produto').value = projectData.produto_contratado || '';
+            document.getElementById('modal_cohort').value = projectData.cohort || '';
+            document.getElementById('modal_meta_account').value = projectData.meta_account_id || '';
+            document.getElementById('modal_google_account').value = projectData.google_account_id || '';
+            document.getElementById('modal_fase_pipefy').value = projectData.fase_do_pipefy || '';
+            document.getElementById('modal_webhook_url').value = projectData.url_webhook_gchat || '';
+            
+            if (projectData.data_de_inicio) {
+                const date = projectData.data_de_inicio.split('T')[0];
+                document.getElementById('modal_data_inicio').value = date;
+            }
+            
+            document.getElementById('clientModal').classList.remove('active');
+            document.getElementById('projectModal').classList.add('active');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentProjectData = null;
+            isEditMode = false;
+            setEditMode(false);
+        }
+
+        function backToClientModal() {
+            document.getElementById('projectModal').classList.remove('active');
+            if (currentClientData) {
+                document.getElementById('clientModal').classList.add('active');
+            }
+            isEditMode = false;
+            setEditMode(false);
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            setEditMode(isEditMode);
+        }
+
+        function setEditMode(enable) {
+            const inputs = document.querySelectorAll('#projectForm input, #projectForm select');
+            inputs.forEach(input => {
+                if (input.id !== 'modal_projeto_id' && input.id !== 'modal_tipo_projeto') {
+                    input.disabled = !enable;
+                }
+            });
+            
+            document.getElementById('editBtn').style.display = enable ? 'none' : 'inline-flex';
+            document.getElementById('saveBtn').style.display = enable ? 'inline-flex' : 'none';
+            
+            if (enable) {
+                document.getElementById('editBtn').innerHTML = '<i class="fa-solid fa-xmark"></i> Cancelar';
+            } else {
+                document.getElementById('editBtn').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Editar';
+            }
+        }
+
+        async function updateProject(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/update_projeto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '4815162342'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert('Projeto atualizado com sucesso!');
+                    closeProjectModal();
+                    location.reload();
+                } else {
+                    alert('Erro ao atualizar projeto');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+
+        window.onclick = function(event) {
+            const clientModal = document.getElementById('clientModal');
+            const projectModal = document.getElementById('projectModal');
+            
+            if (event.target === clientModal) {
+                closeClientModal();
+            } else if (event.target === projectModal) {
+                closeProjectModal();
+            }
+        }
+    </script>
+</body>
+</html>

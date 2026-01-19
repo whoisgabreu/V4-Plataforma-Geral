@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Usuários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style/manage_users.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-left">
+            <img class="logo" src="/static/images/V4LOGO.png" alt="Logo">
+            <div class="header-title">
+                <h1>Gerenciar Usuários</h1>
+                <span class="header-subtitle">Lisboa&CO TechOps</span>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-details">
+                <div class="user-name">{{ session.nome }}</div>
+                <div class="user-role">{{ session.funcao }} - {{ session.squad }}</div>
+            </div>
+            <button class="back-to-home-btn" onclick="window.location.href='/'">
+                <i class="fa-solid fa-house"></i> Voltar
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-container">
+        <div class="actions-bar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Buscar usuários..." onkeyup="filterUsers()">
+            </div>
+            <button class="btn-primary" onclick="openCreateUserModal()">
+                <i class="fa-solid fa-user-plus"></i> Novo Usuário
+            </button>
+        </div>
+
+        <!-- TABELA DE USUÁRIOS -->
+        <div class="users-table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Função</th>
+                        <th>Senioridade</th>
+                        <th>Squad</th>
+                        <th>Nível de Acesso</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    {% if usuarios %}
+                        {% for usuario in usuarios %}
+                        <tr class="user-row" 
+                            data-user-email="{{ usuario.email|lower }}"
+                            data-user-json='{{ usuario|tojson|safe }}'>
+                            <td>
+                                <span class="status-badge status-{{ 'ativo' if usuario.ativo else 'inativo' }}">
+                                    {{ 'Ativo' if usuario.ativo else 'Inativo' }}
+                                </span>
+                            </td>
+                            <td class="user-name-cell">
+                                <i class="fa-solid fa-circle-user user-avatar"></i>
+                                {{ usuario.nome }}
+                            </td>
+                            <td>{{ usuario.email }}</td>
+                            <td>{{ usuario.funcao }}</td>
+                            <td>{{ usuario.senioridade }}</td>
+                            <td>
+                                <span class="squad-badge">{{ usuario.squad }}</span>
+                            </td>
+                            <td>{{ usuario.nivel_acesso }}</td>
+                            <td class="actions-cell">
+                                <button class="btn-action btn-edit" data-action="edit" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-action btn-toggle" 
+                                        data-action="toggle"
+                                        data-user-id="{{ usuario.id }}"
+                                        data-user-status="{{ usuario.ativo|tojson }}"
+                                        title="{{ 'Desativar' if usuario.ativo else 'Ativar' }}">
+                                    <i class="fa-solid fa-{{ 'toggle-on' if usuario.ativo else 'toggle-off' }}"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="empty-table">
+                                <i class="fa-solid fa-users-slash"></i>
+                                <p>Nenhum usuário encontrado</p>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL DE CRIAR/EDITAR USUÁRIO -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Novo Usuário</h2>
+                <button class="close-btn" onclick="closeUserModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="userForm" onsubmit="saveUser(event)">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome Completo *</label>
+                            <input type="text" name="nome" id="user_nome" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" id="user_email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Função *</label>
+                            <input type="text" name="funcao" id="user_funcao" required placeholder="Ex: Desenvolvedor">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Senioridade *</label>
+                            <select name="senioridade" id="user_senioridade" required>
+                                <option value="">Selecione...</option>
+                                <option value="Estagiário">Estagiário</option>
+                                <option value="Júnior">Júnior</option>
+                                <option value="Pleno">Pleno</option>
+                                <option value="Sênior">Sênior</option>
+                                <option value="Especialista">Especialista</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Squad *</label>
+                            <select name="squad" id="user_squad" required>
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Nível de Acesso *</label>
+                            <select name="nivel_acesso" id="user_nivel_acesso" required>
+                                <option value="">Selecione...</option>
+                                <option value="Leitor">Leitor</option>
+                                <option value="Editor">Editor</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <!-- <div class="form-group">
+                            <label>Senha *</label>
+                            <input type="password" name="senha" id="user_senha" required minlength="6">
+                            <small>Mínimo 6 caracteres</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirmar Senha *</label>
+                            <input type="password" name="confirmar_senha" id="user_confirmar_senha" required>
+                        </div> -->
+                        
+                        <div class="form-group full-width">
+                            <label class="switch-label">
+                                <span>Usuário Ativo</span>
+                                <label class="switch">
+                                    <input type="checkbox" name="ativo" id="user_ativo" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeUserModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Usuário
+                    </button>
+                </div>
+                
+                <input type="hidden" name="user_id" id="user_id">
+                <input type="hidden" name="is_edit" id="is_edit" value="false">
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 - 2026 TechOps — Time de Tecnologia da Lisboa&CO. Transformando ideias em inovação.</p>
+    </footer>
+
+    <!-- <script>
+        let squads = [];
+        
+        // Carregar squads ao iniciar
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSquads();
+            attachEventListeners();
+        });
+        
+        function attachEventListeners() {
+            // Event delegation para botões de ação
+            document.querySelectorAll('.btn-action').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const action = this.getAttribute('data-action');
+                    const row = this.closest('tr');
+                    
+                    if (action === 'edit') {
+                        const userData = JSON.parse(row.getAttribute('data-user-json'));
+                        editUser(userData);
+                    } else if (action === 'toggle') {
+                        const userId = this.getAttribute('data-user-id');
+                        const currentStatus = this.getAttribute('data-user-status') === 'true';
+                        toggleUserStatus(userId, currentStatus);
+                    }
+                });
+            });
+        }
+        
+        async function loadSquads() {
+            try {
+                const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/list_squads', {
+                    headers: { 'x-api-key': '4815162342' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    squads = data;
+                    
+                    const select = document.getElementById('user_squad');
+                    select.innerHTML = '<option value="">Selecione...</option>';
+
+                    squads.forEach(squad => {
+                        const option = document.createElement('option');
+                        option.value = squad.projetos || squad;
+                        option.textContent = squad.projetos || squad;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar squads:', error);
+                document.getElementById('user_squad').innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+        
+        function filterUsers() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+        
+        function openCreateUserModal() {
+            document.getElementById('modalTitle').textContent = 'Novo Usuário';
+            document.getElementById('is_edit').value = 'false';
+            document.getElementById('userForm').reset();
+            document.getElementById('user_ativo').checked = true;
+            document.getElementById('user_senha').setAttribute('required', '');
+            document.getElementById('user_confirmar_senha').setAttribute('required', '');
+            document.getElementById('userModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function editUser(userData) {
+            document.getElementById('modalTitle').textContent = 'Editar Usuário';
+            document.getElementById('is_edit').value = 'true';
+            document.getElementById('user_id').value = userData.id || '';
+            document.getElementById('user_nome').value = userData.nome || '';
+            document.getElementById('user_email').value = userData.email || '';
+            document.getElementById('user_funcao').value = userData.funcao || '';
+            document.getElementById('user_senioridade').value = userData.senioridade || '';
+            document.getElementById('user_squad').value = userData.squad || '';
+            document.getElementById('user_nivel_acesso').value = userData.nivel_acesso || '';
+            document.getElementById('user_senha').removeAttribute('required');
+            document.getElementById('user_confirmar_senha').removeAttribute('required');
+            document.getElementById('user_senha').value = '';
+            document.getElementById('user_confirmar_senha').value = '';
+            document.getElementById('user_ativo').checked = userData.ativo !== false;
+            
+            document.getElementById('userModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('userForm').reset();
+        }
+        
+        async function saveUser(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            // Validar senhas apenas se foram preenchidas
+            if (data.senha || data.confirmar_senha) {
+                if (data.senha !== data.confirmar_senha) {
+                    alert('As senhas não coincidem!');
+                    return;
+                }
+            } else if (data.is_edit === 'false') {
+                alert('A senha é obrigatória para novos usuários!');
+                return;
+            }
+            
+            // Converter checkbox para boolean
+            data.ativo = document.getElementById('user_ativo').checked;
+            
+            delete data.confirmar_senha;
+            
+            // Se é edição e senha vazia, remover do objeto
+            if (data.is_edit === 'true' && !data.senha) {
+                delete data.senha;
+            }
+            
+            try {
+                const url = data.is_edit === 'true' 
+                    ? 'https://n8n.v4lisboatech.com.br/webhook/update_user'
+                    : 'https://n8n.v4lisboatech.com.br/webhook/create_user';
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '4815162342'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    closeUserModal();
+                    location.reload();
+                } else {
+                    const error = await response.text();
+                    alert('Erro ao salvar usuário: ' + error);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+        
+        async function toggleUserStatus(userId, currentStatus) {
+            const newStatus = !currentStatus;
+            const action = newStatus ? 'ativar' : 'desativar';
+            
+            if (!confirm(`Deseja ${action} este usuário?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/update_user_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '4815162342'
+                    },
+                    body: JSON.stringify({ user_id: userId, ativo: newStatus, switch: "status" })
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao alterar status do usuário');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('userModal');
+            if (event.target === modal) {
+                closeUserModal();
+            }
+        }
+    </script> -->
+    <script>
+        let squads = [];
+        
+        // Carregar squads ao iniciar
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSquads();
+            attachEventListeners();
+        });
+        
+        function attachEventListeners() {
+            // Event delegation para botões de ação
+            document.querySelectorAll('.btn-action').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const action = this.getAttribute('data-action');
+                    const row = this.closest('tr');
+                    
+                    if (action === 'edit') {
+                        const userData = JSON.parse(row.getAttribute('data-user-json'));
+                        editUser(userData);
+                    } else if (action === 'toggle') {
+                        const userId = this.getAttribute('data-user-id');
+                        const currentStatus = this.getAttribute('data-user-status') === 'true';
+                        toggleUserStatus(userId, currentStatus);
+                    }
+                });
+            });
+        }
+        
+        async function loadSquads() {
+            try {
+                const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/list_squads', {
+                    headers: { 'x-api-key': '4815162342' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    squads = data;
+                    
+                    const select = document.getElementById('user_squad');
+                    select.innerHTML = '<option value="">Selecione...</option>';
+
+                    squads.forEach(squad => {
+                        const option = document.createElement('option');
+                        option.value = squad.projetos || squad;
+                        option.textContent = squad.projetos || squad;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erro ao carregar squads:', error);
+                document.getElementById('user_squad').innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+        
+        function filterUsers() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        }
+        
+        function openCreateUserModal() {
+            document.getElementById('modalTitle').textContent = 'Novo Usuário';
+            document.getElementById('is_edit').value = 'false';
+            document.getElementById('userForm').reset();
+            document.getElementById('user_ativo').checked = true;
+            // document.getElementById('user_senha').setAttribute('required', '');
+            // document.getElementById('user_confirmar_senha').setAttribute('required', '');
+            document.getElementById('userModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function editUser(userData) {
+            document.getElementById('modalTitle').textContent = 'Editar Usuário';
+            document.getElementById('is_edit').value = 'true';
+            document.getElementById('user_id').value = userData.id || '';
+            document.getElementById('user_nome').value = userData.nome || '';
+            document.getElementById('user_email').value = userData.email || '';
+            document.getElementById('user_funcao').value = userData.funcao || '';
+            document.getElementById('user_senioridade').value = userData.senioridade || '';
+            document.getElementById('user_squad').value = userData.squad || '';
+            document.getElementById('user_nivel_acesso').value = userData.nivel_acesso || '';
+            // document.getElementById('user_senha').removeAttribute('required');
+            // document.getElementById('user_confirmar_senha').removeAttribute('required');
+            // document.getElementById('user_senha').value = '';
+            // document.getElementById('user_confirmar_senha').value = '';
+            document.getElementById('user_ativo').checked = userData.ativo !== false;
+            
+            document.getElementById('userModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('userForm').reset();
+        }
+        
+        async function saveUser(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            const isEdit = data.is_edit === 'true';
+            
+            // Se é criação, define senha padrão
+            if (!isEdit) {
+                data.senha = '123456';
+            } else {
+                // Se é edição, validar senhas apenas se foram preenchidas
+                if (data.senha || data.confirmar_senha) {
+                    if (data.senha !== data.confirmar_senha) {
+                        alert('As senhas não coincidem!');
+                        return;
+                    }
+                } else {
+                    // Se senha não foi preenchida na edição, remover do objeto
+                    delete data.senha;
+                }
+            }
+            
+            // Converter checkbox para boolean
+            data.ativo = document.getElementById('user_ativo').checked;
+            
+            // Remover campos desnecessários
+            delete data.confirmar_senha;
+            delete data.is_edit;
+            
+            // Definir o switch apropriado
+            data.switch = isEdit ? 'user_info' : 'create_user';
+            
+            try {
+                const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/update_user_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '4815162342'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert(isEdit ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso! Senha padrão: 123456');
+                    closeUserModal();
+                    location.reload();
+                } else {
+                    const error = await response.text();
+                    alert('Erro ao salvar usuário: ' + error);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+        async function toggleUserStatus(userId, currentStatus) {
+            const newStatus = !currentStatus;
+            const action = newStatus ? 'ativar' : 'desativar';
+            
+            if (!confirm(`Deseja ${action} este usuário?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/update_user_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '4815162342'
+                    },
+                    body: JSON.stringify({ 
+                        user_id: userId, 
+                        ativo: newStatus, 
+                        switch: 'status' 
+                    })
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao alterar status do usuário');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar com o servidor');
+            }
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('userModal');
+            if (event.target === modal) {
+                closeUserModal();
+            }
+        }
+    </script>
+
+</body>
+</html>

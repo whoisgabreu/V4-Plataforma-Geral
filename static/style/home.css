@@ -693,3 +693,107 @@ option {
         grid-template-columns: 1fr;
     }
 }
+
+/* Botão do menu de usuário */
+.user-menu-btn {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.user-menu-btn:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #d61616;
+}
+
+/* Dropdown menu */
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background-color: #17171b;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    min-width: 220px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.user-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    text-decoration: none;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #d61616;
+}
+
+.dropdown-item i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 0.25rem 0;
+}
+
+.logout-item {
+    color: #ff4444;
+}
+
+.logout-item:hover {
+    background-color: rgba(255, 68, 68, 0.1);
+    color: #ff6666;
+}
+
+/* Ajuste na user-info para posicionamento relativo */
+.user-info {
+    position: relative;
+}
+
+/* Remove o botão de logout antigo do CSS */
+.logout-btn {
+    display: none; /* Esconde o botão antigo se ainda existir */
+}
+
+/* MODAL PEQUENO PARA SENHA */
+.modal-small {
+    max-width: 500px;
+}
+
+.form-grid-single {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
