@@ -1,12 +1,10 @@
 {
-  "name": "Painel de Projetos",
-  "short_name": "Projetos",
+  "name": "Omni V4",
+  "short_name": "Omni",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "orientation": "portrait",
-  "lang": "pt-BR",
   "icons": [
     {
       "src": "/static/icons/icon-192.png",
