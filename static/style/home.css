@@ -680,9 +680,23 @@ option {
         gap: 1rem;
     }
 
+        
     .btn-view {
         width: 100%;
         justify-content: center;
+    }
+
+    .modal-footer {
+        align-items: center;
+        justify-content: space-evenly;
+    }
+    
+    .btn-primary,
+    .btn-view,
+    .btn-edit {
+        width: 32%;
+        text-align: center;
+        justify-content: center
     }
 
     .form-grid {
