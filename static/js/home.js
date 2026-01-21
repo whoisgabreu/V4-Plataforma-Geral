@@ -297,7 +297,7 @@ async function updatePassword(event) {
                 'x-api-key': '4815162342'
             },
             body: JSON.stringify({
-                email: '{{ session.email }}',
+                email: window.APP_CONFIG.userEmail,
                 senha: novaSenha,
                 switch: 'user_password'
             })
