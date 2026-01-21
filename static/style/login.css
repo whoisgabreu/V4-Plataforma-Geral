@@ -162,6 +162,12 @@
         display: none;
       }
 
+      input {
+        font-size: 16px;
+        height: 38px;
+        line-height: 38px;
+      }
+
 
     }
 
