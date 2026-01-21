@@ -692,7 +692,6 @@ option {
     }
     
     .btn-primary,
-    .btn-view,
     .btn-edit {
         width: 32%;
         text-align: center;
