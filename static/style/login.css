@@ -154,19 +154,14 @@
     @media (max-width: 900px) {
       .container {
         flex-direction: column;
-        width: 90%;
+        width: 100%;
         height: auto;
       }
 
       .info-section {
         display: none;
       }
-      
-      input {
-          font-size: 16px;
-          transform: scale(0.95);
-          transform-origin: left top;
-      }
+
 
     }
 
@@ -181,7 +176,7 @@
       font-size: 12px
     }
 
-    .error-message {
+  .error-message {
     background-color: rgba(255, 68, 68, 0.1);
     border: 1px solid rgba(255, 68, 68, 0.3);
     border-radius: 8px;
@@ -192,7 +187,7 @@
     gap: 0.75rem;
     color: #ff4444;
     animation: shake 0.3s ease-in-out;
-}
+  }
 
 .error-message i {
     font-size: 1.2rem;
