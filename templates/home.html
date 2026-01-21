@@ -6,6 +6,7 @@
     <title>Hub de Projetos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="/static/style/home.css">
+    <script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -152,7 +153,7 @@
                                 </div>
                                 <span class="project-status status-onetime">{{ projetos|length }} projeto(s)</span>
                             </div>
-                            <h3 class="project-title">{{ cliente_nome }}</h3>
+                            <h3 class="project-title">{{ cliente_nome|title }}</h3>
                             <p class="project-description">
                                 Squad: {{ projetos[0].squad_atribuida if projetos[0].squad_atribuida else 'N/A' }}
                             </p>
@@ -193,7 +194,7 @@
                                 </div>
                                 <span class="project-status status-inativo">{{ projetos|length }} projeto(s)</span>
                             </div>
-                            <h3 class="project-title">{{ cliente_nome }}</h3>
+                            <h3 class="project-title">{{ cliente_nome|title }}</h3>
                             <p class="project-description">
                                 Squad: {{ projetos[0].squad_atribuida if projetos[0].squad_atribuida else 'N/A' }}
                             </p>
@@ -662,7 +663,7 @@
         }
     </script> -->
 
-    <script>
+    <!-- <script>
         let currentSlide = 'ativos';
         let currentClientData = null;
         let currentProjectData = null;
@@ -983,7 +984,7 @@
                 closePasswordModal();
             }
         });
-    </script>
+    </script> -->
 
 
 </body>

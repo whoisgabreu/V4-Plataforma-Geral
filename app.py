@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_from_directory
 import requests as req
 import os
 from collections import defaultdict
@@ -147,6 +147,10 @@ def manage_users():
         usuarios = []
     
     return render_template("manage_users.html", usuarios=usuarios)
+
+@app.route('/service-worker.js')
+def service_worker():
+    return send_from_directory('static', 'service-worker.js')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

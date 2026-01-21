@@ -685,10 +685,6 @@ option {
         justify-content: center;
     }
 
-    .modal-footer {
-        flex-wrap: wrap;
-    }
-
     .form-grid {
         grid-template-columns: 1fr;
     }

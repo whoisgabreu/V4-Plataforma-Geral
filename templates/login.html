@@ -6,6 +6,7 @@
     <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style/login.css') }}">
+    <script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
 
 </head>
 <body>
@@ -55,7 +56,7 @@
   Transformando ideias em inovação.</p>
   </footer>
 
-  <script>
+  <!-- <script>
       const senhaInput = document.getElementById("senha");
       const toggleIcon = document.getElementById("toggleSenha");
 
@@ -65,7 +66,15 @@
           toggleIcon.classList.toggle("fa-eye");
           toggleIcon.classList.toggle("fa-eye-slash");
       });
-  </script>
+  </script> -->
   
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/service-worker.js')
+        .then(() => console.log('Service Worker registrado'))
+        .catch(err => console.error('SW erro:', err));
+    }
+  </script>
+
 </body>
 </html>
