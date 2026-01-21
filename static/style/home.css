@@ -695,15 +695,17 @@ option {
     .btn-edit {
         width: 32%;
         text-align: center;
-        justify-content: center
+        justify-content: center;
     }
 
     .form-grid {
         grid-template-columns: 1fr;
     }
     input {
-        font-size: 16px;
+        font-size: 17px;
         transform-origin: left top;
+        height: 38px;
+        line-height: 38px;
     }
 
 }
