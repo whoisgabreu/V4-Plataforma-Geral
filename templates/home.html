@@ -6,7 +6,7 @@
     <title>Hub de Projetos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="/static/style/home.css">
-    <script src="{{ url_for('static', filename='js/home.min.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
     {% include "pwa.html" %}
 </head>
 <body>
@@ -246,11 +246,19 @@
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h2 id="projectModalTitle">Detalhes do Projeto</h2>
-                <button class="close-btn" onclick="closeProjectModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <div class="header-actions">
+                    <button class="history-btn" id="historyBtn" onclick="openHistoryModal()" title="Ver Histórico">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </button>
+                    <button class="close-btn" onclick="closeProjectModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
             
+
+
+
             <form id="projectForm" onsubmit="updateProject(event)">
                 <div class="modal-body">
                     <div class="form-grid">
@@ -422,6 +430,29 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL DE HISTÓRICO -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Alterações</h2>
+                <button class="close-btn" onclick="closeHistoryModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="historyContent" class="history-timeline">
+                    <!-- Conteúdo será preenchido via JavaScript -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeHistoryModal()">Fechar</button>
+            </div>
         </div>
     </div>
 
