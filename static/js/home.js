@@ -13,7 +13,7 @@ function formatCurrency(value, currency) {
     const number = Number(value);
     if (isNaN(number)) return '';
 
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: currency || 'BRL'
     }).format(number / 100);
