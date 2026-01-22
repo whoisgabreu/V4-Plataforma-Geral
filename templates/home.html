@@ -247,6 +247,9 @@
                 </button>
                 <h2 id="projectModalTitle">Detalhes do Projeto</h2>
                 <div class="header-actions">
+                    <button class="add-note-btn" onclick="openAddNoteModal()" title="Adicionar Nota">
+                        <i class="fa-solid fa-note-sticky"></i>
+                    </button>
                     <button class="history-btn" id="historyBtn" onclick="openHistoryModal()" title="Ver Histórico">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                     </button>
@@ -370,6 +373,24 @@
                             <label>Informações Gerais do Projeto</label>
                             <textarea name="informacoes_gerais" id="modal_informacoes" rows="6" disabled></textarea>
                         </div>
+
+                        <!-- Dentro do modal de projeto, após os campos existentes -->
+                        <div class="form-group full-width">
+                            <label>URL Webhook GChat</label>
+                            <input type="url" name="url_webhook_gchat" id="modal_webhook_url" disabled>
+                        </div>
+
+                        <!-- SEÇÃO DE NOTAS CUSTOMIZADAS -->
+                        <div class="form-group full-width notes-section" id="notesSection">
+                            <div class="notes-header">
+                                <label><i class="fa-solid fa-note-sticky"></i> Notas e Anotações</label>
+                            </div>
+                            <div id="notesContainer" class="notes-container">
+                                <!-- Notas serão adicionadas aqui dinamicamente -->
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
                 
@@ -456,6 +477,37 @@
         </div>
     </div>
 
+
+    <!-- MODAL DE ADICIONAR NOTA -->
+    <div id="addNoteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Nova Nota</h2>
+                <button class="close-btn" onclick="closeAddNoteModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="addNoteForm" onsubmit="addNote(event)">
+                <div class="modal-body">
+                    <div class="form-grid-single">
+                        <div class="form-group">
+                            <label>Nome da Nota *</label>
+                            <input type="text" id="note_name" required placeholder="Ex: Análise de Mercado">
+                            <small>Este será o título do campo de anotação</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeAddNoteModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i> Adicionar Nota
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <footer>
         <p>© 2025 - 2026 TechOps — Time de Tecnologia da Lisboa&CO. Transformando ideias em inovação.</p>

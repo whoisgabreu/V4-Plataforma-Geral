@@ -1,10 +1,11 @@
 let currentSlide = 'ativos';
 let currentClientData = null;
 let currentProjectData = null;
+let currentHistorico = null;
 let isEditMode = false;
 
 /* ==============================
-UTILITÁRIOS DE MOEDA (NOVO)
+UTILITÁRIOS DE MOEDA
 ================================ */
 
 function formatCurrency(value, currency) {
@@ -121,6 +122,7 @@ MODAL PROJETO
 
 function openProjectModal(projectData, tipoProjeto) {
     currentProjectData = projectData;
+    currentHistorico = projectData.extra?.historico || [];
     isEditMode = false;
     setEditMode(false);
 
@@ -132,11 +134,7 @@ function openProjectModal(projectData, tipoProjeto) {
     document.getElementById('modal_nome').value = projectData.nome || '';
     document.getElementById('modal_pipefy_id').value = projectData.pipefy_id || '';
     document.getElementById('modal_documento').value = projectData.documento || '';
-
-    // ✅ Fee formatado (agora funciona)
-    document.getElementById('modal_fee').value =
-        formatCurrency(projectData.fee, projectData.moeda);
-
+    document.getElementById('modal_fee').value = formatCurrency(projectData.fee, projectData.moeda);
     document.getElementById('modal_moeda').value = projectData.moeda || 'BRL';
     document.getElementById('modal_squad').value = projectData.squad_atribuida || '';
     document.getElementById('modal_produto').value = projectData.produto_contratado || '';
@@ -157,6 +155,16 @@ function openProjectModal(projectData, tipoProjeto) {
         document.getElementById('modal_data_inicio').value = '';
     }
 
+    // Mostrar/esconder botão de histórico
+    const historyBtn = document.getElementById('historyBtn');
+    if (historyBtn) {
+        if (currentHistorico && currentHistorico.length > 0) {
+            historyBtn.style.display = 'flex';
+        } else {
+            historyBtn.style.display = 'none';
+        }
+    }
+
     document.getElementById('clientModal').classList.remove('active');
     document.getElementById('projectModal').classList.add('active');
 }
@@ -165,6 +173,7 @@ function closeProjectModal() {
     document.getElementById('projectModal').classList.remove('active');
     document.body.style.overflow = 'auto';
     currentProjectData = null;
+    currentHistorico = null;
     isEditMode = false;
     setEditMode(false);
 }
@@ -203,6 +212,88 @@ function setEditMode(enable) {
 }
 
 /* ==============================
+MODAL HISTÓRICO
+================================ */
+
+function openHistoryModal() {
+    const historyContent = document.getElementById('historyContent');
+    
+    if (!currentHistorico || currentHistorico.length === 0) {
+        historyContent.innerHTML = `
+            <div class="empty-history">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h3>Sem histórico</h3>
+                <p>Nenhuma alteração foi registrada para este projeto</p>
+            </div>
+        `;
+    } else {
+        // Ordenar por data (mais recente primeiro)
+        const sortedHistory = [...currentHistorico].sort((a, b) => 
+            new Date(b.data) - new Date(a.data)
+        );
+        
+        historyContent.innerHTML = sortedHistory.map(item => {
+            const date = new Date(item.data);
+            const formattedDate = date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const changes = Object.entries(item.alteracoes || {}).map(([field, values]) => {
+                // Formatar o nome do campo
+                const fieldName = field.replace(/_/g, ' ');
+                
+                return `
+                    <div class="change-item">
+                        <div class="change-field">${fieldName}</div>
+                        <div class="change-values">
+                            <div class="change-before">
+                                <strong>Antes:</strong><br>
+                                ${values.antes || '<em>vazio</em>'}
+                            </div>
+                            <div class="change-arrow">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </div>
+                            <div class="change-after">
+                                <strong>Depois:</strong><br>
+                                ${values.depois || '<em>vazio</em>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            return `
+                <div class="history-card">
+                    <div class="history-header">
+                        <div class="history-date">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            ${formattedDate}
+                        </div>
+                        <div class="history-user">
+                            <i class="fa-solid fa-user"></i>
+                            ${item.usuario}
+                        </div>
+                    </div>
+                    <div class="history-changes">
+                        ${changes}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    document.getElementById('historyModal').classList.add('active');
+}
+
+function closeHistoryModal() {
+    document.getElementById('historyModal').classList.remove('active');
+}
+
+/* ==============================
 UPDATE PROJETO
 ================================ */
 
@@ -212,7 +303,6 @@ async function updateProject(event) {
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
 
-    // ✅ NORMALIZA MOEDA
     data.fee = parseCurrencyToCents(data.fee);
     data.usuario = window.APP_CONFIG.userEmail;
     
@@ -313,9 +403,23 @@ async function updatePassword(event) {
     }
 }
 
+/* ==============================
+EVENT LISTENERS GLOBAIS
+================================ */
+
 window.addEventListener('click', function(event) {
     const passwordModal = document.getElementById('passwordModal');
+    const historyModal = document.getElementById('historyModal');
+    const clientModal = document.getElementById('clientModal');
+    const projectModal = document.getElementById('projectModal');
+    
     if (event.target === passwordModal) {
         closePasswordModal();
+    } else if (event.target === historyModal) {
+        closeHistoryModal();
+    } else if (event.target === clientModal) {
+        closeClientModal();
+    } else if (event.target === projectModal) {
+        closeProjectModal();
     }
 });

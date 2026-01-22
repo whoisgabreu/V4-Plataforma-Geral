@@ -912,8 +912,149 @@ option {
     opacity: 0.5;
 }
 
+/* NOVO MODAL */
+/* Botão adicionar nota */
+.add-note-btn {
+    background: transparent;
+    border: 1px solid rgb(255 255 255 / 0%);
+    color: #a0a0a0;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.add-note-btn:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #d61616;
+}
 
+/* Seção de notas */
+.notes-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(255, 0, 0, 0.2);
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.notes-header label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: #ffffff;
+}
+
+.notes-header label i {
+    color: #d61616;
+}
+
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.note-item {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: 0.2s;
+}
+
+.note-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.note-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.note-item-title {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+.note-item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-note-action {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #a0a0a0;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.btn-note-action:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    border-color: #d61616;
+    color: #d61616;
+}
+
+.note-item textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    resize: vertical;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.5;
+}
+
+.note-item textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.note-item textarea:not(:disabled):focus {
+    outline: none;
+    border-color: rgba(255, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.notes-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #a0a0a0;
+}
+
+.notes-empty i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+    display: block;
+}
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
