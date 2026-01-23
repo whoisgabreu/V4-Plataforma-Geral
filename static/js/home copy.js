@@ -123,6 +123,10 @@ MODAL PROJETO
 function openProjectModal(projectData, tipoProjeto) {
     currentProjectData = projectData;
     currentHistorico = projectData.extra?.historico || [];
+
+    currentNotas = projectData.notas || {};
+    renderNotes();
+
     isEditMode = false;
     setEditMode(false);
 
@@ -147,12 +151,20 @@ function openProjectModal(projectData, tipoProjeto) {
     document.getElementById('modal_orcamento_midia_google').value = projectData.orcamento_midia_google || '';
     document.getElementById('modal_fase_pipefy').value = projectData.fase_do_pipefy || '';
     document.getElementById('modal_webhook_url').value = projectData.url_webhook_gchat || '';
+    document.getElementById('modal_ekyte_workspace').value = projectData.ekyte_workspace || '';
 
     if (projectData.data_de_inicio) {
         document.getElementById('modal_data_inicio').value =
             String(projectData.data_de_inicio).split('T')[0];
     } else {
         document.getElementById('modal_data_inicio').value = '';
+    }
+
+    if (projectData.data_fim) {
+        document.getElementById('modal_data_fim').value =
+            String(projectData.data_fim).split('T')[0];
+    } else {
+        document.getElementById('modal_data_fim').value = '';
     }
 
     // Mostrar/esconder botão de histórico
@@ -190,6 +202,7 @@ function backToClientModal() {
 function toggleEditMode() {
     isEditMode = !isEditMode;
     setEditMode(isEditMode);
+    renderNotes(); // 🔥 ESSENCIAL
 }
 
 function setEditMode(enable) {
@@ -251,14 +264,14 @@ function openHistoryModal() {
                         <div class="change-field">${fieldName}</div>
                         <div class="change-values">
                             <div class="change-before">
-                                <strong>Antes:</strong><br>
+                                <!-- <strong>Antes:</strong><br> -->
                                 ${values.antes || '<em>vazio</em>'}
                             </div>
                             <div class="change-arrow">
                                 <i class="fa-solid fa-arrow-right"></i>
                             </div>
                             <div class="change-after">
-                                <strong>Depois:</strong><br>
+                                <!-- <strong>Depois:</strong><br> -->
                                 ${values.depois || '<em>vazio</em>'}
                             </div>
                         </div>
@@ -294,7 +307,7 @@ function closeHistoryModal() {
 }
 
 /* ==============================
-UPDATE PROJETO
+UPDATE PROJETO (ATUALIZADO)
 ================================ */
 
 async function updateProject(event) {
@@ -305,6 +318,9 @@ async function updateProject(event) {
 
     data.fee = parseCurrencyToCents(data.fee);
     data.usuario = window.APP_CONFIG.userEmail;
+    
+    // Coletar notas do formulário
+    data.notas = collectNotesFromForm();
     
     try {
         const response = await fetch('https://n8n.v4lisboatech.com.br/webhook/update_projeto', {
@@ -317,8 +333,10 @@ async function updateProject(event) {
         });
 
         if (response.ok) {
-            closeProjectModal();
-            location.reload();
+            alert(`Os dados do projeto ${data.produto_contratado} foram atualizados.`)
+            backToClientModal();
+            // closeProjectModal();
+            // location.reload();
         }
     } catch (error) {
         console.error('Erro:', error);
@@ -403,23 +421,128 @@ async function updatePassword(event) {
     }
 }
 
+let currentNotas = {};
+
 /* ==============================
-EVENT LISTENERS GLOBAIS
+MODAL ADICIONAR NOTA
 ================================ */
 
-window.addEventListener('click', function(event) {
-    const passwordModal = document.getElementById('passwordModal');
-    const historyModal = document.getElementById('historyModal');
-    const clientModal = document.getElementById('clientModal');
-    const projectModal = document.getElementById('projectModal');
-    
-    if (event.target === passwordModal) {
-        closePasswordModal();
-    } else if (event.target === historyModal) {
-        closeHistoryModal();
-    } else if (event.target === clientModal) {
-        closeClientModal();
-    } else if (event.target === projectModal) {
-        closeProjectModal();
+function openAddNoteModal() {
+    if (!isEditMode) {
+        alert('Ative o modo de edição primeiro para adicionar notas');
+        return;
     }
-});
+    document.getElementById('addNoteModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddNoteModal() {
+    document.getElementById('addNoteModal').classList.remove('active');
+    document.getElementById('addNoteForm').reset();
+}
+
+function addNote(event) {
+    event.preventDefault();
+    
+    const noteName = document.getElementById('note_name').value.trim();
+    
+    if (!noteName) {
+        alert('Digite um nome para a nota');
+        return;
+    }
+    
+    // Verificar se já existe uma nota com esse nome
+    if (currentNotas.hasOwnProperty(noteName)) {
+        alert('Já existe uma nota com este nome');
+        return;
+    }
+    
+    // Adicionar a nota
+    currentNotas[noteName] = '';
+    
+    // Renderizar notas
+    renderNotes();
+    
+    closeAddNoteModal();
+}
+
+function renderNotes() {
+    const container = document.getElementById('notesContainer');
+    
+    if (Object.keys(currentNotas).length === 0) {
+        container.innerHTML = `
+            <div class="notes-empty">
+                <i class="fa-solid fa-note-sticky"></i>
+                <p>Nenhuma nota adicionada</p>
+                <small>Clique no botão "+" no header para adicionar notas</small>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = Object.entries(currentNotas).map(([name, value]) => `
+        <div class="note-item" data-note-name="${name}">
+            <div class="note-item-header">
+                <div class="note-item-title">
+                    <i class="fa-solid fa-note-sticky"></i> ${name}
+                </div>
+                <div class="note-item-actions">
+                    <button type="button" class="btn-note-action" onclick="removeNote('${name}')" title="Remover nota" ${!isEditMode ? 'disabled' : ''}>
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <textarea 
+                data-note-field="${name}"
+                placeholder="Digite suas anotações aqui..."
+                ${!isEditMode ? 'disabled' : ''}
+            >${value || ''}</textarea>
+        </div>
+    `).join('');
+}
+
+function removeNote(noteName) {
+    if (!confirm(`Deseja remover a nota "${noteName}"?`)) {
+        return;
+    }
+    
+    delete currentNotas[noteName];
+    renderNotes();
+}
+
+function collectNotesFromForm() {
+    const textareas = document.querySelectorAll('[data-note-field]');
+    const notes = {};
+    
+    textareas.forEach(textarea => {
+        const fieldName = textarea.getAttribute('data-note-field');
+        notes[fieldName] = textarea.value || '';
+    });
+    
+    return notes;
+}
+
+
+/* ==============================
+EVENT LISTENERS GLOBAIS (ATUALIZADO)
+================================ */
+
+// window.addEventListener('click', function(event) {
+//     const passwordModal = document.getElementById('passwordModal');
+//     const historyModal = document.getElementById('historyModal');
+//     const clientModal = document.getElementById('clientModal');
+//     const projectModal = document.getElementById('projectModal');
+//     const addNoteModal = document.getElementById('addNoteModal');
+    
+//     if (event.target === passwordModal) {
+//         closePasswordModal();
+//     } else if (event.target === historyModal) {
+//         closeHistoryModal();
+//     } else if (event.target === clientModal) {
+//         closeClientModal();
+//     } else if (event.target === projectModal) {
+//         closeProjectModal();
+//     } else if (event.target === addNoteModal) {
+//         closeAddNoteModal();
+//     }
+// });
