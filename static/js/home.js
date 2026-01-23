@@ -151,12 +151,20 @@ function openProjectModal(projectData, tipoProjeto) {
     document.getElementById('modal_orcamento_midia_google').value = projectData.orcamento_midia_google || '';
     document.getElementById('modal_fase_pipefy').value = projectData.fase_do_pipefy || '';
     document.getElementById('modal_webhook_url').value = projectData.url_webhook_gchat || '';
+    document.getElementById('modal_ekyte_workspace').value = projectData.ekyte_workspace || '';
 
     if (projectData.data_de_inicio) {
         document.getElementById('modal_data_inicio').value =
             String(projectData.data_de_inicio).split('T')[0];
     } else {
         document.getElementById('modal_data_inicio').value = '';
+    }
+
+    if (projectData.data_fim) {
+        document.getElementById('modal_data_fim').value =
+            String(projectData.data_fim).split('T')[0];
+    } else {
+        document.getElementById('modal_data_fim').value = '';
     }
 
     // Mostrar/esconder botão de histórico
