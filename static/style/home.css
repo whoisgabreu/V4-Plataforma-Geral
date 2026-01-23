@@ -807,7 +807,6 @@ option {
 .history-card {
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-left: 3px solid #d61616;
     border-radius: 8px;
     padding: 1.5rem;
     transition: 0.2s;
@@ -860,7 +859,7 @@ option {
 }
 
 .change-field {
-    color: #d61616;
+    color: #ffffff;
     font-weight: 600;
     font-size: 0.9rem;
     text-transform: capitalize;
@@ -878,21 +877,64 @@ option {
 
 .change-before,
 .change-after {
-    padding: 0.5rem;
-    border-radius: 4px;
+    padding: 1rem;
+    border-radius: 10px;
     font-size: 0.85rem;
+    text-align: center;
+    max-height: 200px;
+    overflow: auto;
+    color: #ffffffab;
 }
 
 .change-before {
-    background-color: rgba(255, 68, 68, 0.1);
+    background-color: rgb(255 68 68 / 0.05);
     border: 1px solid rgba(255, 68, 68, 0.3);
-    color: #ff9999;
+    
 }
 
+
+.change-before::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.change-before::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.change-before::-webkit-scrollbar-thumb {
+    background: rgba(255, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.change-before::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 0, 0, 0.5);
+}
+
+
 .change-after {
-    background-color: rgba(0, 255, 0, 0.1);
+    background-color: rgba(0, 255, 0, 0.05);
     border: 1px solid rgba(0, 255, 0, 0.3);
-    color: #99ff99;
+}
+
+.change-after::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.change-after::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.change-after::-webkit-scrollbar-thumb {
+    background: rgb(0 255 38 / 30%);
+    border-radius: 10px;
+}
+
+.change-after::-webkit-scrollbar-thumb:hover {
+    background: rgb(0 255 26 / 50%);
 }
 
 .change-arrow {

@@ -264,14 +264,14 @@ function openHistoryModal() {
                         <div class="change-field">${fieldName}</div>
                         <div class="change-values">
                             <div class="change-before">
-                                <strong>Antes:</strong><br>
+                                <!-- <strong>Antes:</strong><br> -->
                                 ${values.antes || '<em>vazio</em>'}
                             </div>
                             <div class="change-arrow">
                                 <i class="fa-solid fa-arrow-right"></i>
                             </div>
                             <div class="change-after">
-                                <strong>Depois:</strong><br>
+                                <!-- <strong>Depois:</strong><br> -->
                                 ${values.depois || '<em>vazio</em>'}
                             </div>
                         </div>
@@ -333,8 +333,10 @@ async function updateProject(event) {
         });
 
         if (response.ok) {
-            closeProjectModal();
-            location.reload();
+            alert(`Os dados do projeto ${data.produto_contratado} foram atualizados.`)
+            backToClientModal();
+            // closeProjectModal();
+            // location.reload();
         }
     } catch (error) {
         console.error('Erro:', error);
