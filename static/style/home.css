@@ -233,7 +233,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 1.5rem;
-    transition: 0.3s;
+    transition: 0.1s;
     cursor: pointer;
 }
 
@@ -439,6 +439,7 @@ body {
     padding: 2rem;
     max-height: calc(85vh - 180px);
     overflow-y: auto;
+    box-shadow: inset 0px 5px 10px rgb(0 0 0 / 50%)
 }
 
 .modal-body::-webkit-scrollbar {
@@ -610,7 +611,7 @@ body {
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
-    transition: 0.2s;
+    transition: 0.1s;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -628,7 +629,7 @@ body {
 .btn-view:hover,
 .btn-edit:hover {
     background-color: #911414;
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+    box-shadow: inset 0 0px 5px rgb(0 0 0);
 }
 
 .btn-secondary {

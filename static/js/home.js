@@ -73,9 +73,16 @@ function openClientModal(cardElement) {
     const clienteNome = cardElement.querySelector('.project-title').textContent;
     const tipo = cardElement.getAttribute('data-tipo');
 
+    const formatarData = (dataISO) => {
+        if (!dataISO) return '—';
+
+        const [ano, mes, dia] = dataISO.split('T')[0].split('-');
+        return `${dia}/${mes}/${ano}`;
+    };
+
     currentClientData = { nome: clienteNome, projetos, tipo };
 
-    document.getElementById('clientModalTitle').textContent = `Projetos de ${clienteNome}`;
+    document.getElementById('clientModalTitle').textContent = `Projetos de: ${clienteNome}`;
 
     const projectsList = document.getElementById('projectsList');
     projectsList.innerHTML = '';
@@ -90,7 +97,8 @@ function openClientModal(cardElement) {
                 <h4>${projeto.produto_contratado || 'Sem nome'}</h4>
                 <p>
                     Squad: ${projeto.squad_atribuida || 'N/A'} |
-                    Fee: ${feeFormatado || '—'}
+                    Fee: ${feeFormatado || '—'} |
+                    Data Inicio: ${formatarData(projeto.data_de_inicio)}
                 </p>
             </div>
             <button class="btn-view">
