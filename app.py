@@ -15,7 +15,12 @@ def login():
 
         if usuario and senha:
             response = req.get("https://n8n.v4lisboatech.com.br/webhook/check_login", headers={"x-api-key": "4815162342"}, params = {"email": usuario})
+
+            if response.status_code == 401:
+                return render_template("login.html", error = "E-mail e/ou Senha incorreto(s).")
+            
             print(usuario, senha, response.json())
+
             
             db_nome = response.json()[0].get("user").get("nome")
             db_email = response.json()[0].get("user").get("email")
