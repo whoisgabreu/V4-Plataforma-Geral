@@ -134,7 +134,7 @@ def manage_users():
         return redirect(url_for("login"))
     
     # Verificar se é gerência
-    if session.get("squad") != "Gerência":
+    if session.get("nivel_acesso") != "Admin":
         return redirect(url_for("home"))
     
     # Buscar usuários

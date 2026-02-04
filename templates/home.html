@@ -91,7 +91,11 @@
         <div class="filters">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
+                {% if session.squad == "Gerência" %}
                 <input type="text" id="searchInput" placeholder="Buscar por cliente ou squad..." onkeyup="filterClients()">
+                {% else %}
+                <input type="text" id="searchInput" placeholder="Buscar por cliente..." onkeyup="filterClients()">
+                {% endif %}
             </div>
         </div>
 
