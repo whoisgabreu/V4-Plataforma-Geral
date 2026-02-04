@@ -53,16 +53,38 @@ function switchTab(ev, tab) {
     filterClients();
 }
 
+// function filterClients() {
+//     const searchValue = document.getElementById('searchInput').value.toLowerCase();
+//     const activeSlide = document.querySelector('.slide-content.active');
+//     const cards = activeSlide.querySelectorAll('.project-card');
+
+//     cards.forEach(card => {
+//         const clientName = (card.getAttribute('data-cliente') || '').toLowerCase();
+//         card.style.display = clientName.includes(searchValue) ? 'block' : 'none';
+//     });
+// }
+
 function filterClients() {
-    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const searchValue = document
+        .getElementById('searchInput')
+        .value
+        .toLowerCase();
+
     const activeSlide = document.querySelector('.slide-content.active');
     const cards = activeSlide.querySelectorAll('.project-card');
 
     cards.forEach(card => {
         const clientName = (card.getAttribute('data-cliente') || '').toLowerCase();
-        card.style.display = clientName.includes(searchValue) ? 'block' : 'none';
+        const squadName  = (card.getAttribute('data-squad') || '').toLowerCase();
+
+        const match =
+            clientName.includes(searchValue) ||
+            squadName.includes(searchValue);
+
+        card.style.display = match ? 'block' : 'none';
     });
 }
+
 
 /* ==============================
 MODAL CLIENTE
@@ -417,6 +439,7 @@ function atualizarCards(dados) {
                     data-cliente="${cliente.toLowerCase()}"
                     data-projetos='${JSON.stringify(projetos)}'
                     data-tipo="${tipoProjeto}"
+                    data-squad="${primeiroProj.squad_atribuida}"
                     onclick="openClientModal(this)">
                     <div class="project-header">
                         <div class="project-icon ${tipoSlide === 'inativos' ? 'inactive' : ''}">
@@ -605,7 +628,7 @@ function addNote(event) {
     
     // Renderizar notas
     renderNotes();
-    
+
     closeAddNoteModal();
 }
 

@@ -33,7 +33,16 @@ body {
 .logo {
     height: 50px;
     width: 50px;
+    cursor: pointer;
+    transition: 0.1s;
 }
+
+
+.logo:hover {
+    filter: drop-shadow(0 3px 0 #D61616);
+    transform: translateY(-5px);
+}
+
 
 .header-title h1 {
     font-size: 1.5rem;

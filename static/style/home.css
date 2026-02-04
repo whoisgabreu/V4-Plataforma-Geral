@@ -361,7 +361,7 @@ body {
     border: 1px solid rgba(255, 0, 0, 0.3);
     border-radius: 12px;
     width: 90%;
-    max-width: 900px;
+    max-width: 1600px;
     max-height: 85vh;
     overflow: hidden;
     animation: slideUp 0.3s;
@@ -1153,3 +1153,8 @@ option {
     }
 
 }
+
+
+
+
+/* CSS TESTE APAGAR DEPOIS */

@@ -91,7 +91,7 @@
         <div class="filters">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="Buscar clientes..." onkeyup="filterClients()">
+                <input type="text" id="searchInput" placeholder="Buscar por cliente ou squad..." onkeyup="filterClients()">
             </div>
         </div>
 
@@ -106,6 +106,7 @@
                             data-cliente="{{ cliente_nome|lower }}"
                             data-projetos='{{ projetos|tojson|safe }}'
                             data-tipo="ativo"
+                            data-squad="{{ projetos[0].squad_atribuida|lower }}"
                             onclick="openClientModal(this)">
                             <div class="project-header">
                                 <div class="project-icon">

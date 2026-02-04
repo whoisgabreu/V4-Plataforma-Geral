@@ -59,6 +59,9 @@ def agrupar_por_cliente(projetos_lista):
         projeto = item.get('projetos', {})
         cliente_nome = projeto.get('nome', 'Cliente Desconhecido')
         clientes[cliente_nome].append(projeto)
+        # squad_atribuida = projeto.get("squad_atribuida", "N/A")
+        # clientes[cliente_nome].append(squad_atribuida)
+
     return dict(clientes)
 
 def buscar_projetos(url, email):
@@ -96,6 +99,8 @@ def home():
         session["email"]
     )
     ativos = agrupar_por_cliente(ativos_data) if ativos_data else {}
+
+    print(ativos.items())
 
     onetime_data = buscar_projetos(
         "https://n8n.v4lisboatech.com.br/webhook/list_projetos_onetime",
