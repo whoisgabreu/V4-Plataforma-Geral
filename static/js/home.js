@@ -177,9 +177,9 @@ function openProjectModal(projectData, tipoProjeto) {
 
     const dataInicio = projectData.data_de_inicio;
 
-    if (dataFim && !String(dataFim).includes('2900')) {
+    if (dataInicio && !String(dataInicio).includes('2900')) {
         document.getElementById('modal_data_inicio').value =
-            String(dataFim).split('T')[0];
+            String(dataInicio).split('T')[0];
     } else {
         document.getElementById('modal_data_inicio').value = '';
     }
