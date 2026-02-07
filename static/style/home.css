@@ -32,6 +32,9 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* HEADER */
 .header {
+    position: sticky;
+    z-index: 999;
+    top: 0;
     background-color: #17171b;
     padding: 1rem 2rem;
     display: flex;
