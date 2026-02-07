@@ -13,6 +13,23 @@ body {
     flex-direction: column;
 }
 
+body::-webkit-scrollbar{
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #2a2a2a
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #D61616;
+    border-radius: 8px
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #ff3333;
+}
+
 /* HEADER */
 .header {
     background-color: #17171b;
