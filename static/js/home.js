@@ -204,6 +204,18 @@ function openProjectModal(projectData, tipoProjeto) {
     document.getElementById('modal_webhook_url').value = projectData.url_webhook_gchat || '';
     document.getElementById('modal_ekyte_workspace').value = projectData.ekyte_workspace || '';
 
+    let pipefyButton = document.getElementById("pipefyButton");
+
+    pipefyButton.onclick = (e) => {
+        if (e.button === 0) {
+            window.open(
+                `https://app.pipefy.com/open-cards/${projectData.pipefy_id}`,
+                '_blank',
+                'noopener,noreferrer'
+            );
+        }
+    };
+
     // if (projectData.data_de_inicio) {
     //     document.getElementById('modal_data_inicio').value =
     //         String(projectData.data_de_inicio).split('T')[0];

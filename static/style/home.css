@@ -505,6 +505,29 @@ body {
 }
 
 /* FORMULÁRIO */
+.input-with-icon {
+    position: relative
+}
+
+#pipefyButton {
+    display: flex;
+    width: 1vw;
+    height: 1vw;
+    justify-content: center;
+    padding-top: 10px;
+    background: #00000029;
+    border-radius: 8px;
+    position: absolute;
+    right: 0.1vw;
+    bottom: 0.4vh;
+    transition: 0.3s;
+    cursor: pointer
+}
+
+#pipefyButton:hover {
+    background: #ffffff5c
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -541,7 +564,7 @@ body {
 .form-group input:disabled,
 .form-group select:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
+    /* cursor: not-allowed; */
     border: none;
     border-left: 1px solid rgb(255 255 255 / 45%);
 
