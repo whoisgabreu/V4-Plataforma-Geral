@@ -17,7 +17,7 @@ function formatCurrency(value, currency) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: currency || 'BRL'
-    }).format(number / 100); // centavos → reais
+    }).format(number / 100);
 }
 
 function parseCurrencyToCents(value) {
@@ -97,6 +97,7 @@ function openClientModal(cardElement) {
 
     const formatarData = (dataISO) => {
         if (!dataISO) return '—';
+
         const [ano, mes, dia] = dataISO.split('T')[0].split('-');
         return `${dia}/${mes}/${ano}`;
     };
@@ -108,28 +109,6 @@ function openClientModal(cardElement) {
     const projectsList = document.getElementById('projectsList');
     projectsList.innerHTML = '';
 
-    // 🔹 TOTAL DO FEE (em centavos)
-    let totalFee = 0;
-    let moeda = null;
-
-    projetos.forEach(projeto => {
-        if (projeto.fee) {
-            totalFee += Number(projeto.fee);
-            moeda = projeto.moeda;
-        }
-    });
-
-    const totalFeeFormatado = formatCurrency(totalFee, moeda);
-
-    // 🔹 Exibe o total
-    const totalItem = document.createElement('div');
-    totalItem.className = 'project-total-fee';
-    totalItem.innerHTML = `
-        <strong>Fee Total:</strong> ${totalFeeFormatado || '—'}
-    `;
-    projectsList.appendChild(totalItem);
-
-    // 🔹 Lista projetos
     projetos.forEach(projeto => {
         const feeFormatado = formatCurrency(projeto.fee, projeto.moeda);
 

@@ -467,6 +467,11 @@ body {
     gap: 0;
 }
 
+.project-total-fee {
+    padding: 10px;
+    border-left: solid 1px red;
+}
+
 .project-list-item {
     display: flex;
     justify-content: space-between;
