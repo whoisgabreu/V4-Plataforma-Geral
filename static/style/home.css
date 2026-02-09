@@ -1172,6 +1172,16 @@ option {
         gap: 1rem;
     }
 
+    .modal-header {
+        max-height: 90px;
+
+
+    }
+
+    #clientModalTitle,
+    #projectModalTitle {
+            font-size: 15px
+    }
         
     .btn-view {
         width: 100%;
