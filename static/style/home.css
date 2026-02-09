@@ -539,7 +539,7 @@ body::-webkit-scrollbar-thumb:hover {
     border-radius: 8px;
     position: absolute;
     right: 4px;
-    bottom: 4px;
+    bottom: 5px;
     transition: 0.3s;
     cursor: pointer;
 }
