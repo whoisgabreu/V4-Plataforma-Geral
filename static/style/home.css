@@ -531,17 +531,17 @@ body::-webkit-scrollbar-thumb:hover {
 
 #pipefyButton {
     display: flex;
-    width: 1vw;
-    height: 1vw;
+    width: 32px;
+    height: 32px;
     justify-content: center;
-    padding-top: 10px;
+    align-items: center;
     background: #00000029;
     border-radius: 8px;
     position: absolute;
-    right: 0.1vw;
-    bottom: 0.4vh;
+    right: 4px;
+    bottom: 4px;
     transition: 0.3s;
-    cursor: pointer
+    cursor: pointer;
 }
 
 #pipefyButton:hover {
