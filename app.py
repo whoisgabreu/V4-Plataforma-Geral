@@ -52,15 +52,33 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
+# def agrupar_por_cliente(projetos_lista):
+#     """Agrupa projetos por nome do cliente"""
+#     clientes = defaultdict(list)
+#     for item in projetos_lista:
+#         projeto = item.get('projetos', {})
+#         cliente_nome = projeto.get('nome', 'Cliente Desconhecido')
+#         clientes[cliente_nome].append(projeto)
+#         # squad_atribuida = projeto.get("squad_atribuida", "N/A")
+#         # clientes[cliente_nome].append(squad_atribuida)
+
+#     return dict(clientes)
+
 def agrupar_por_cliente(projetos_lista):
-    """Agrupa projetos por nome do cliente"""
+    """Agrupa projetos por nome do cliente, ordenados por id"""
+
+    # ordena a lista pelo campo id
+    projetos_ordenados = sorted(
+        projetos_lista,
+        key=lambda item: item.get('projetos', {}).get('id', 0)
+    )
+
     clientes = defaultdict(list)
-    for item in projetos_lista:
+
+    for item in projetos_ordenados:
         projeto = item.get('projetos', {})
         cliente_nome = projeto.get('nome', 'Cliente Desconhecido')
         clientes[cliente_nome].append(projeto)
-        # squad_atribuida = projeto.get("squad_atribuida", "N/A")
-        # clientes[cliente_nome].append(squad_atribuida)
 
     return dict(clientes)
 
@@ -90,8 +108,9 @@ def home():
         return redirect(url_for("login"))
 
     # Buscar projetos com tratamento de erro
+    
 
-    resp = req.get("https://n8n.v4lisboatech.com.br/webhook/squads?email=martins.gabriel@v4company.com", headers= {"x-api-key": "4815162342"})
+    resp = req.get(f"https://n8n.v4lisboatech.com.br/webhook/squads?email={session["email"]}", headers= {"x-api-key": "4815162342"})
     squads = [x["projetos"]["nome"] for x in resp.json()]
 
     ativos_data = buscar_projetos(
@@ -99,8 +118,6 @@ def home():
         session["email"]
     )
     ativos = agrupar_por_cliente(ativos_data) if ativos_data else {}
-
-    print(ativos.items())
 
     onetime_data = buscar_projetos(
         "https://n8n.v4lisboatech.com.br/webhook/list_projetos_onetime",

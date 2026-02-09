@@ -539,7 +539,7 @@ body::-webkit-scrollbar-thumb:hover {
     border-radius: 8px;
     position: absolute;
     right: 4px;
-    bottom: 5px;
+    bottom: 4px;
     transition: 0.3s;
     cursor: pointer;
 }
@@ -1172,6 +1172,12 @@ option {
         gap: 1rem;
     }
 
+        
+    .btn-view {
+        width: 100%;
+        justify-content: center;
+    }
+
     .modal-header {
         max-height: 90px;
 
@@ -1182,12 +1188,7 @@ option {
     #projectModalTitle {
             font-size: 15px
     }
-        
-    .btn-view {
-        width: 100%;
-        justify-content: center;
-    }
-
+    
     .modal-footer {
         align-items: center;
         justify-content: space-evenly;
@@ -1211,8 +1212,3 @@ option {
     }
 
 }
-
-
-
-
-/* CSS TESTE APAGAR DEPOIS */

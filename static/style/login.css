@@ -56,6 +56,14 @@
       z-index: 2;
     }
 
+    .logo-title {
+      user-select: none;
+      font-size: 35px;
+      color: white;
+      position: absolute;
+      top: 45%;
+    }
+
     .form-section h2 {
       color: #ffffff;
       margin-bottom: 5rem;
@@ -183,6 +191,9 @@
     }
 
   .error-message {
+    position: absolute;
+    bottom:0;
+    width: 300px;
     background-color: rgba(255, 68, 68, 0.1);
     border: 1px solid rgba(255, 68, 68, 0.3);
     border-radius: 8px;
@@ -190,6 +201,7 @@
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
+    text-align: center;
     gap: 0.75rem;
     color: #ff4444;
     animation: shake 0.3s ease-in-out;
